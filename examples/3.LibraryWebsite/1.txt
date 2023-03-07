@@ -1,0 +1,222 @@
+1.
+# Windows
+> cd onedrive\desktop\code
+> mkdir library
+> cd library
+> python -m venv .venv
+> .venv\Scripts\Activate.ps1
+(.venv) > python -m pip install django~=4.0.0
+# macOS
+% cd desktop/desktop/code
+% mkdir library
+% cd library
+% python3 -m venv .venv
+% source .venv/bin/activate
+(.venv) % python3 -m pip install django~=4.0.0
+----------------------------------------------------------------
+2.
+
+(.venv) > django-admin startproject django_project .
+----------------------------------------------------------------
+3.
+├── django_project
+│   ├── __init__.py
+|   ├── asgi.py
+│   ├── settings.py
+│ ├── urls.py
+│   └── wsgi.py
+├── manage.py
+└── .venv/
+----------------------------------------------------------------
+4.
+(.venv) > python manage.py migrate
+(.venv) > python manage.py runserver
+----------------------------------------------------------------
+5.
+(.venv) > python manage.py startapp books
+----------------------------------------------------------------
+6.
+
+├── books
+│   ├── __init__.py
+│   ├── admin.py
+│ ├── apps.py
+│   ├── migrations
+│   │   └── __init__.py
+│   ├── models.py
+│   ├── tests.py
+│   └── views.py
+----------------------------------------------------------------
+7.
+# django_project/settings.py
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # Local
+    "books.apps.BooksConfig",  # new
+]
+----------------------------------------------------------------
+8.
+# books/models.py
+from django.db import models
+class Book(models.Model):
+    title = models.CharField(max_length=250)
+    subtitle = models.CharField(max_length=250)
+    author = models.CharField(max_length=100)
+    isbn = models.CharField(max_length=13)
+    def __str__(self):
+        return self.title
+----------------------------------------------------------------
+9.
+(.venv) > python manage.py makemigrations books
+Migrations for 'books':
+  books/migrations/0001_initial.py
+    - Create model Book
+----------------------------------------------------------------
+10.
+(.venv) > python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, books, contenttypes, sessions
+Running migrations:
+  Applying books.0001_initial... OK 
+----------------------------------------------------------------
+11.
+(.venv) > python manage.py createsuperuser
+----------------------------------------------------------------
+12.
+# books/admin.py
+from django.contrib import admin
+
+from .models import Book
+
+admin.site.register(Book)
+----------------------------------------------------------------
+13.
+
+(.venv) > python manage.py runserver
+----------------------------------------------------------------
+14.
+# books/views.py
+from django.views.generic import ListView
+from .models import Book
+class BookListView(ListView):
+    model = Book
+    template_name = "book_list.html"
+ 
+----------------------------------------------------------------
+15.
+# django_project/urls.py
+from django.contrib import admin
+from django.urls import path, include # new
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("", include("books.urls")),  # new
+]
+
+----------------------------------------------------------------
+16.
+# books/urls.py
+from django.urls import path
+from .views import BookListView
+urlpatterns = [
+    path("", BookListView.as_view(), name="home"),
+]
+----------------------------------------------------------------
+17.
+
+(.venv) > mkdir books/templates
+(.venv) > mkdir books/templates/books
+
+----------------------------------------------------------------
+18.
+<!-- books/templates/books/book_list.html -->
+<h1>All books</h1>
+{% for book in book_list %} <ul>
+<li>Title: {{ book.title }}</li> <li>Subtitle: {{ book.subtitle }}</li> <li>Author: {{ book.author }}</li> <li>ISBN: {{ book.isbn }}</li>
+</ul>
+{% endfor %}
+----------------------------------------------------------------
+19
+(.venv) > python manage.py runserver
+----------------------------------------------------------------
+20.
+# books/tests.py
+from django.test import TestCase from django.urls import reverse
+from .models import Book
+class BookTests(TestCase): @classmethod
+def setUpTestData(cls):
+cls.book = Book.objects.create(
+            title="A good title",
+            subtitle="An excellent subtitle",
+            author="Tom Christie",
+            isbn="1234567890123",
+)
+def test_book_content(self):
+self.assertEqual(self.book.title, "A good title") self.assertEqual(self.book.subtitle, "An excellent subtitle") self.assertEqual(self.book.author, "Tom Christie") self.assertEqual(self.book.isbn, "1234567890123")
+def test_book_listview(self):
+response = self.client.get(reverse("home")) self.assertEqual(response.status_code, 200) self.assertContains(response, "excellent subtitle") self.assertTemplateUsed(response, "books/book_list.html")
+
+----------------------------------------------------------------
+21.
+(.venv) > python manage.py test
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..
+----------------------------------------------------------------
+22.
+Ran 2 tests in 0.007s
+OK
+Destroying test database for alias 'default'...
+----------------------------------------------------------------
+23.
+(.venv) > git init
+(.venv) > git status
+On branch main
+No commits yet
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .venv/
+        books/
+        db.sqlite3
+        django_project/
+        manage.py
+nothing added to commit but untracked files present (use "git add" to track)
+----------------------------------------------------------------
+24.
+.venv/
+----------------------------------------------------------------
+25.
+(.venv) > pip freeze > requirements.txt
+----------------------------------------------------------------
+26.
+(.venv) > git add -A
+(.venv) > git commit -m "initial commit"
+
+(.venv) > git add -A
+(.venv) > git commit -m "initial commit"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
