@@ -1,0 +1,49 @@
+1.
+
+CRUD                            HTTP Verbs
+----                            ----------
+Create  <-------------------->  POST
+Read    <-------------------->  GET
+Update  <-------------------->  PUT
+Delete  <-------------------->  DELETE
+------------------------------------------------------------------------------------
+2.
+https://www.mysite.com/api/users          # GET returns all users
+https://www.mysite.com/api/users/<id>     # GET returns a single user
+------------------------------------------------------------------------------------
+3.
+GET / HTTP/1.1
+Host: google.com
+Accept_Language: en-US
+------------------------------------------------------------------------------------
+4.
+HTTP/1.1 200 OK
+Date: Mon, 24 Jan 2022 23:26:07 GMT
+Server: gws
+Accept-Ranges: bytes
+Content-Length: 13
+Content-Type: text/html; charset=UTF-8
+Hello, world!
+------------------------------------------------------------------------------------
+5.
+Response/request line
+Headers...
+(optional) Body
+------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
