@@ -1,0 +1,11 @@
+1.
+https://djangopackages.org/
+--------------------------
+2.
+https://github.com/wsvincent/awesome-django
+--------------------------
+3.
+https://djangoforbeginners.com/
+--------------------
+4.
+https://github.com/wsvincent/restapiswithdjango
