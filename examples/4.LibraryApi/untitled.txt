@@ -1,0 +1,207 @@
+1.
+(.venv) > python -m pip install djangorestframework~=3.13.0
+------------------------------------------------------------------------
+2.
+# django_project/settings.py
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # 3rd party
+    "rest_framework",  # new
+    # Local
+    "books.apps.BooksConfig",
+]
+------------------------------------------------------------------------
+3.
+(.venv) > python manage.py startapp apis
+------------------------------------------------------------------------
+4.
+# django_project/settings.py
+INSTALLED_APPS = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # 3rd party
+    "rest_framework",
+    # Local
+    "books.apps.BooksConfig",
+    "apis.apps.ApisConfig",  # new
+]
+------------------------------------------------------------------------
+5.
+# django_project/urls.py
+from django.contrib import admin from django.urls import path, include
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/", include("apis.urls")),  # new
+    path("", include("books.urls")),
+]
+------------------------------------------------------------------------
+6.
+# apis/urls.py
+from django.urls import path
+from .views import BookAPIView
+urlpatterns = [
+    path("", BookAPIView.as_view(), name="book_list"),
+]
+------------------------------------------------------------------------
+7.
+# apis/views.py
+from rest_framework import generics from books.models import Book
+from .serializers import BookSerializer
+class BookAPIView(generics.ListAPIView): queryset = Book.objects.all() serializer_class = BookSerializer
+------------------------------------------------------------------------
+8.
+# apis/serializers.py
+from rest_framework import serializers from books.models import Book
+class BookSerializer(serializers.ModelSerializer): class Meta:
+        model = Book
+        fields = ("title", "subtitle", "author", "isbn")
+------------------------------------------------------------------------
+9.
+(.venv) > python manage.py runserver
+------------------------------------------------------------------------
+10.
+
+# apis/tests.py
+from django.urls import reverse
+from rest_framework import status
+from rest_framework.test import APITestCase
+from books.models import Book
+class APITests(APITestCase): @classmethod
+def setUpTestData(cls):
+cls.book = Book.objects.create(
+            title="Django for APIs",
+            subtitle="Build web APIs with Python and Django",
+            author="William S. Vincent",
+            isbn="9781735467221",
+)
+def test_api_listview(self):
+response = self.client.get(reverse("book_list")) self.assertEqual(response.status_code, status.HTTP_200_OK) self.assertEqual(Book.objects.count(), 1) self.assertContains(response, self.book)
+------------------------------------------------------------------------
+11.
+(.venv) > python manage.py test
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+...
+----------------------------------------------------------
+Ran 3 tests in 0.009s
+OK
+Destroying test database for alias 'default'...
+
+
+------------------------------------------------------------------------
+12.
+(.venv) > python manage.py test apis
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+OK
+Destroying test database for alias 'default'...
+------------------------------------------------------------------------
+13.
+% /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/\
+  install/HEAD/install.sh)"
+  
+------------------------------------------------------------------------
+14.
+% brew tap heroku/brew && brew install heroku
+
+------------------------------------------------------------------------
+15.
+
+(.venv) > heroku --version
+heroku/7.59.2 darwin-x64 node-v12.21.0
+------------------------------------------------------------------------
+16.
+(.venv) > heroku login
+Enter your Heroku credentials:
+Email: will@wsvincent.com
+Password: *********************************
+Logged in as will@wsvincent.com
+------------------------------------------------------------------------
+17.
+(.venv) > mkdir static
+------------------------------------------------------------------------
+18.
+(.venv) > python -m pip install whitenoise==6.0.0
+------------------------------------------------------------------------
+19.
+# django_project/settings.py
+INSTALLED_APPS = [
+    ...
+    "whitenoise.runserver_nostatic",  # new
+    "django.contrib.staticfiles",
+]
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # new
+    ...
+]
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]  # new
+STATIC_ROOT = BASE_DIR / "staticfiles"  # new
+STATICFILES_STORAGE =
+"whitenoise.storage.CompressedManifestStaticFilesStorage" # new
+------------------------------------------------------------------------
+20.
+(.venv) > python manage.py collectstatic
+
+------------------------------------------------------------------------
+21.
+(.venv) > python -m pip install gunicorn~=20.1.0
+------------------------------------------------------------------------
+22.
+(.venv) > python -m pip freeze > requirements.txt
+------------------------------------------------------------------------
+23.
+python-3.10.2
+------------------------------------------------------------------------
+24.
+# django_project/settings.py
+ALLOWED_HOSTS = [".herokuapp.com", "localhost", "127.0.0.1"]
+------------------------------------------------------------------------
+25.
+web: gunicorn django_project.wsgi --log-file -
+------------------------------------------------------------------------
+26.
+(.venv) > git status
+(.venv) > git add -A
+(.venv) > git commit -m "New updates for Heroku deployment"
+------------------------------------------------------------------------
+27.
+(.venv) > git remote add origin https://github.com/wsvincent/library.git
+(.venv) > git push -u origin main
+------------------------------------------------------------------------
+28.
+(.venv) > heroku create wsvincent-library
+Creating ￿ wsvincent-library... done
+https://wsvincent-library.herokuapp.com/ | https://git.heroku.com/wsvincent-library.git
+
+------------------------------------------------------------------------
+29.
+(.venv) > git push heroku main
+(.venv) > heroku ps:scale web=1
+------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
